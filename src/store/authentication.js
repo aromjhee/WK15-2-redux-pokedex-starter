@@ -1,6 +1,7 @@
 import { baseUrl } from '../config';
 
-const SET_TOKEN = 'store/authentication/setToken';
+const SET_TOKEN = 'pokedex/authentication/SET_TOKEN';
+const TOKEN_KEY = 'pokedex/authentication/TOKEN_KEY';
 
 export const setToken = token => ({ type: SET_TOKEN, token });
 
@@ -14,6 +15,14 @@ export const login = (email, password) => async dispatch => {
 
   if (response.ok) {
     const { token } = await response.json();
+    window.localStorage.setItem(TOKEN_KEY, token);
+    dispatch(setToken(token))
+  }
+}
+
+export const loadToken = () => async dispatch => {
+  const token = window.localStorage.getItem(TOKEN_KEY)
+  if (token) {
     dispatch(setToken(token))
   }
 }

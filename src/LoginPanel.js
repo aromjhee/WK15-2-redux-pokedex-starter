@@ -28,7 +28,7 @@ class LoginPanel extends Component {
   }
 
   render() {
-    if (this.state.token) {
+    if (this.props.token) {
       return <Redirect to="/" />;
     }
     return (
@@ -51,6 +51,7 @@ class LoginPanel extends Component {
 
 const mapStateToProps = state => {
   return {
+    token: state.authentication.token,
   };
 };
 
