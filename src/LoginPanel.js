@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import { baseUrl } from './config';
+import { login } from './store/authentication';
 
 class LoginPanel extends Component {
   constructor(props) {
@@ -14,17 +16,7 @@ class LoginPanel extends Component {
 
   async handleSubmit(e) {
     e.preventDefault();
-    const response = await fetch(`${baseUrl}/session`, {
-      method: 'put',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.state),
-    });
-
-    if (response.ok) {
-      const { token } = await response.json();
-      this.props.updateToken(token);
-      this.setState({ token });
-    }
+    this.props.login(this.state.email, this.state.password);
   }
 
   updateEmail = e => {
@@ -57,4 +49,23 @@ class LoginPanel extends Component {
   }
 }
 
-export default LoginPanel;
+const mapStateToProps = state => {
+  return {
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    login: (email, password) => dispatch(login(email, password))
+  };
+};
+
+// Yes, this looks funny, but you will often
+// see this kind of indentation in others'
+// code when using React and Redux.
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  LoginPanel
+);
