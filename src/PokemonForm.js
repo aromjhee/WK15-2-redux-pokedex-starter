@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
-import { baseUrl } from './config';
+import { getTypes, createPokemon, hideForm } from './store/pokemon';
 
 class PokemonForm extends Component {
   constructor(props) {
@@ -26,15 +27,7 @@ class PokemonForm extends Component {
   }
 
   async componentDidMount() {
-    const response = await fetch(`${baseUrl}/pokemon/types`, {
-      headers: { Authorization: `Bearer ${this.props.token}`},
-    });
-    if (response.ok) {
-      const types = await response.json();
-      this.setState({
-        types,
-      });
-    }
+    this.props.getTypes();
   }
 
   async handleSubmit(e) {
@@ -43,17 +36,7 @@ class PokemonForm extends Component {
     const payload = this.state;
     payload.moves = [payload.move1, payload.move2];
 
-    const response = await fetch(`${baseUrl}/pokemon`, {
-      method: 'post',
-      headers: {
-        Authorization: `Bearer ${this.props.token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-    if (response.ok) {
-      this.props.handleCreated(await response.json());
-    }
+    this.props.createPokemon(payload);
   }
 
   updateProperty = property => e => {
@@ -97,15 +80,30 @@ class PokemonForm extends Component {
             value={this.state.move2}
             onChange={this.updateMove2} />
           <select onChange={this.updateType}>
-            {this.state.types.map(type =>
+            {this.props.types.map(type =>
               <option key={type}>{type}</option>
             )}
           </select>
           <button type="submit">Create new Pokemon</button>
+          <button type="button" onClick={this.props.hideForm}>Cancel</button>
         </form>
       </section>
     );
   }
 }
 
-export default PokemonForm;
+const mapStateToProps = state => {
+  return {
+    types: state.pokemon.types
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getTypes: () => dispatch(getTypes()),
+    createPokemon: data => dispatch(createPokemon(data)),
+    hideForm: () => dispatch(hideForm()),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PokemonForm);

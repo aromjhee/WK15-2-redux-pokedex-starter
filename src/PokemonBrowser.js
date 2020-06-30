@@ -7,14 +7,11 @@ import LogoutButton from './LogoutButton';
 import PokemonDetail from './PokemonDetail';
 import PokemonForm from './PokemonForm';
 import Fab from './Fab';
-import { getPokemon} from './store/pokemon';
+import { getPokemon, showForm } from './store/pokemon';
 
 class PokemonBrowser extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      showForm: false,
-    };
   }
 
   handleCreated = (pokemon) => {
@@ -43,7 +40,7 @@ class PokemonBrowser extends Component {
       <main>
         <LogoutButton token={this.props.token} />
         <nav>
-          <Fab hidden={this.state.showForm} onClick={this.showForm} />
+          <Fab hidden={this.props.formVisible} onClick={this.props.showForm} />
           {this.props.pokemon.map(pokemon => {
             return (
               <NavLink key={pokemon.name} to={`/pokemon/${pokemon.id}`}>
@@ -60,8 +57,8 @@ class PokemonBrowser extends Component {
             );
           })}
         </nav>
-        { this.state.showForm ?
-          <PokemonForm token={this.props.token} handleCreated={this.handleCreated} /> :
+        { this.props.formVisible ?
+          <PokemonForm token={this.props.token} /> :
           <Route path="/pokemon/:id" render={props =>
             <PokemonDetail {...props} token={this.props.token} />
           } />
@@ -73,13 +70,15 @@ class PokemonBrowser extends Component {
 
 const mapStateToProps = state => {
   return {
-    pokemon: state.pokemon.pokemonList
+    pokemon: state.pokemon.pokemonList,
+    formVisible: state.pokemon.formVisible,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    getPokemon: () => dispatch(getPokemon())
+    getPokemon: () => dispatch(getPokemon()),
+    showForm: () => dispatch(showForm()),
   }
 }
 

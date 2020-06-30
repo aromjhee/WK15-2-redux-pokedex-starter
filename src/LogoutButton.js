@@ -1,32 +1,27 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
-import { baseUrl } from './config';
+import { connect } from 'react-redux';
 
-class LogoutButton extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loggedOut: false
-    };
-  }
+import { logout } from './store/authentication';
 
-  logout = () => {
-    fetch(`${baseUrl}/session`, {
-      method: 'delete',
-      headers: { Authorization: `Bearer ${this.props.token}` },
-    }).then(() => this.setState({ loggedOut: true }));
-  }
+const LogoutButton = props =>
+  props.loggedOut ?
+    <Redirect to="/login" /> :
+    <div id="logout-button-holder">
+      <button onClick={props.logout}>Logout</button>
+    </div>
+  ;
 
-  render() {
-    if (this.state.loggedOut) {
-      return <Redirect to="/login" />;
-    }
-    return (
-      <div id="logout-button-holder">
-        <button onClick={this.logout}>Logout</button>
-      </div>
-    );
+const mapStateToProps = state => {
+  return {
+    loggedOut: !(state.authentication.token)
   }
 }
 
-export default LogoutButton;
+const mapDispatchToProps = dispatch => {
+  return {
+    logout: () => dispatch(logout())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LogoutButton);

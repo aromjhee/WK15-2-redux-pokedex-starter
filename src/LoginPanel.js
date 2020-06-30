@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-import { baseUrl } from './config';
+
 import { login } from './store/authentication';
 
 class LoginPanel extends Component {
